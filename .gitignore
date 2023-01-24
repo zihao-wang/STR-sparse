@@ -1,0 +1,4 @@
+runs
+rawdata
+**/*.pyc
+**/.ipynb_checkpoints

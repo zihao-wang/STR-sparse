@@ -9,6 +9,7 @@ import os
 import numpy as np
 torch.multiprocessing.set_sharing_strategy("file_system")
 
+
 class ImageNet:
     def __init__(self, args):
         super(ImageNet, self).__init__()
@@ -66,7 +67,7 @@ class TinyImageNet:
         super(TinyImageNet, self).__init__()
 
         data_root = os.path.join(args.data, "tiny_imagenet")
-        
+
         use_cuda = torch.cuda.is_available()
         kwargs = {'num_workers': 0, 'pin_memory': True} if use_cuda else {}
 

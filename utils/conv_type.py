@@ -19,6 +19,26 @@ def initialize_sInit():
     if parser_args.sInit_type == "constant":
         return parser_args.sInit_value*torch.ones([1, 1])
 
+
+class VanillaConv(nn.Conv2d):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def forward(self, x):
+        # In case STR is not training for the hyperparameters given in the paper, change sparseWeight to self.sparseWeight if it is a problem of backprop.
+        # However, that should not be the case according to graph computation.
+        x = F.conv2d(
+            x, self.weight, self.bias, self.stride, self.padding, self.dilation, self.groups
+        )
+        return x
+
+    def getSparsity(self, f=torch.sigmoid):
+        sparseWeight = sparseFunction(self.weight, self.sparseThreshold,  self.activation, self.f)
+        temp = sparseWeight.detach().cpu()
+        temp[temp!=0] = 1
+        return (100 - temp.mean().item()*100), temp.numel(), 0
+
+
 class STRConv(nn.Conv2d):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -30,7 +50,7 @@ class STRConv(nn.Conv2d):
             self.sparseThreshold = nn.Parameter(initialize_sInit())
         else:
             self.sparseThreshold = nn.Parameter(initialize_sInit())
-    
+
     def forward(self, x):
         # In case STR is not training for the hyperparameters given in the paper, change sparseWeight to self.sparseWeight if it is a problem of backprop.
         # However, that should not be the case according to graph computation.

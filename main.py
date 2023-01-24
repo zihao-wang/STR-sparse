@@ -57,8 +57,8 @@ def main_worker(args):
     if args.pretrained:
         pretrained(args, model)
 
-        # Saving a DenseConv (nn.Conv2d) compatible model 
-        if args.dense_conv_model:    
+        # Saving a DenseConv (nn.Conv2d) compatible model
+        if args.dense_conv_model:
             print(f"==> DenseConv compatible model, saving at {ckpt_base_dir / 'model_best.pth'}")
             save_checkpoint(
                 {
@@ -341,7 +341,7 @@ def get_model(args):
         args.first_layer_type = "DenseConv"
 
     print("=> Creating model '{}'".format(args.arch))
-    model = models.__dict__[args.arch]()
+    model = models.__dict__[args.arch](num_classes=args.num_classes)
 
     print(f"=> Num model params {sum(p.numel() for p in model.parameters())}")
 

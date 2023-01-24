@@ -153,9 +153,9 @@ class ResNet(nn.Module):
 
 
 # ResNet }}}
-def ResNet18(pretrained=False):
+def ResNet18(pretrained=False, num_classes=10):
     # TODO: pretrained
-    return ResNet(get_builder(), BasicBlock, [2, 2, 2, 2], 1000)
+    return ResNet(get_builder(), BasicBlock, [2, 2, 2, 2], num_classes)
 
 
 def ResNet50(pretrained=False):

@@ -12,12 +12,15 @@ def parse_arguments():
 
     # General Config
     parser.add_argument(
-        "--data", help="path to dataset base directory", default="/mnt/disk1/datasets"
+        "--data", help="path to dataset base directory", default="./.data"
     )
     parser.add_argument("--optimizer", help="Which optimizer to use", default="sgd")
     parser.add_argument("--set", help="name of dataset", type=str, default="ImageNet")
     parser.add_argument(
         "-a", "--arch", metavar="ARCH", default="ResNet18", help="model architecture"
+    )
+    parser.add_argument(
+        "-nc", "--num_classes", metavar="NC", default=10, type=int, help="model architecture"
     )
     parser.add_argument(
         "--config", help="Config file to use (see configs dir)", default=None
@@ -223,7 +226,7 @@ def parse_arguments():
         help="type of sInit",
         default="constant",
     )
-    
+
     parser.add_argument(
         "--sInit-value",
         type=float,
@@ -241,6 +244,16 @@ def parse_arguments():
     parser.add_argument(
         "--ignore-pretrained-weights", action="store_true", help="ignore the weights of a pretrained model."
     )
+
+    ## add L1 regularization
+    parser.add_argument(
+        "--l1-reg", default=0, type=float, help="regularization of the l1 weight."
+    )
+
+    parser.add_argument(
+        "--l1-retrain-dir", type=str, help="provide a path to retrain."
+    )
+
 
     args = parser.parse_args()
 

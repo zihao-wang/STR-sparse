@@ -21,7 +21,7 @@ that contains the ImageNet `train` and `val` folders that contains images of eac
 ## Vanilla Training
 This codebase contains model architectures for [ResNet18](models/resnet.py#L156), [ResNet50](models/resnet.py#L161) and [MobileNetV1](models/mobilenetv1.py) and support to train them on ImageNet-1K. We have provided some `config` files for training [ResNet50](models/resnet.py#L161) and [MobileNetV1](models/mobilenetv1.py) which can be modified for other architectures and datasets. To support more datasets, please add new dataloaders to [`data`](data/) folder.
 
-Training across multiple GPUs is supported, however, the user should check the minimum number of GPUs required to scale ImageNet-1K. 
+Training across multiple GPUs is supported, however, the user should check the minimum number of GPUs required to scale ImageNet-1K.
 
 ### Train dense models on ImageNet-1K:
 
@@ -43,16 +43,16 @@ DNW: ```python main.py --config configs/largescale/resnet50-dnw.yaml --multigpu 
 
 GMP: ```python main.py --config configs/largescale/resnet50-gmp.yaml --multigpu 0,1,2,3```
 
-Please note that **GMP** implementation is not thoroughly tested, so caution is advised. 
+Please note that **GMP** implementation is not thoroughly tested, so caution is advised.
 
-Modify the `config` files to tweak the performance and sparsity levels in both DNW and GMP. 
+Modify the `config` files to tweak the performance and sparsity levels in both DNW and GMP.
 
 ## Models and Logging
 STR models are not compatible with the traditional dense models for simple evaluation and usage as transfer learning backbones. DNW and GMP models are compatible to the dense model.
 
 Every experiment creates a directory inside `runs` folder (which will be created automatically) along with the tensorboard logs, initial model state (for LTH experiments) and best model (`model_best.pth`).
 
-The `runs` folder also has dumps of the csv with final and best accuracies along with layer-wise sparsity distributions and thresholds in case of STR. The code checkpoints after every epoch giving a chance to resume training when pre-empted, the extra functionalities can be explored through ```python main.py -h```. 
+The `runs` folder also has dumps of the csv with final and best accuracies along with layer-wise sparsity distributions and thresholds in case of STR. The code checkpoints after every epoch giving a chance to resume training when pre-empted, the extra functionalities can be explored through ```python main.py -h```.
 
 ### Convert STR model to dense model:
 
@@ -80,11 +80,11 @@ Transfer to GMP: ```python main.py --config configs/largescale/<arch>-gmp.yaml -
 You should modify the corresponding `config` files for DNW and GMP to increase accuracy by changing the hyperparameters.
 
 ## Pretrained Models
-All the models provided here are trained on ImageNet-1K according to the settings in the [paper](https://arxiv.org/abs/2002.03231). 
+All the models provided here are trained on ImageNet-1K according to the settings in the [paper](https://arxiv.org/abs/2002.03231).
 
 ### Fully Dense Models:
 
-These models are straightforward to train using this repo and their pre-trained models are in most of the popular frameworks. For the sake of reproducibility, pretrained dense models are provided. 
+These models are straightforward to train using this repo and their pre-trained models are in most of the popular frameworks. For the sake of reproducibility, pretrained dense models are provided.
 
 | Architecture | Params | Sparsity (%) | Top-1 Acc (%) | FLOPs | Model Links |
 | ------------ | :----: | :----------: | :-----------: | :---: | :---------: |

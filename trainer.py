@@ -43,6 +43,12 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
 
         loss = criterion(output, target.view(-1))
 
+        if args.l1_reg > 0:
+            l1_reg = 0
+            for p in model.parameters():
+                l1_reg += p.abs().sum()
+            loss = loss + l1_reg * args.l1_reg
+
         # measure accuracy and record loss
         acc1, acc5 = accuracy(output, target, topk=(1, 5))
         losses.update(loss.item(), images.size(0))
@@ -112,4 +118,3 @@ def validate(val_loader, model, criterion, args, writer, epoch):
             progress.write_to_tensorboard(writer, prefix="test", global_step=epoch)
 
     return top1.avg, top5.avg
-
