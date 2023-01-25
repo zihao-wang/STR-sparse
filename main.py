@@ -193,18 +193,19 @@ def main_worker(args):
         end_epoch = time.time()
 
         # Storing sparsity and threshold statistics for STRConv models
-        if args.conv_type == "STRConv":
-            count = 0
-            sum_sparse = 0.0
-            for n, m in model.named_modules():
-                if isinstance(m, STRConv):
-                    sparsity, total_params, thresh = m.getSparsity()
-                    writer.add_scalar("sparsity/{}".format(n), sparsity, epoch)
-                    writer.add_scalar("thresh/{}".format(n), thresh, epoch)
-                    sum_sparse += int(((100 - sparsity) / 100) * total_params)
-                    count += total_params
-            total_sparsity = 100 - (100 * sum_sparse / count)
-            writer.add_scalar("sparsity/total", total_sparsity, epoch)
+        total_count = 0
+        nonzero_count = 0
+        for n, m in model.named_modules():
+            if isinstance(m, nn.Conv2d):
+                nonzero, total, thresh = m.getSparsity()
+                writer.add_scalar("sparsity/{}".format(n), 1-nonzero/total, epoch)
+                writer.add_scalar("compress_ratio/{}".format(n), total/nonzero, epoch)
+                writer.add_scalar("thresh/{}".format(n), thresh, epoch)
+                total_count += total
+                nonzero_count += nonzero
+
+        writer.add_scalar("sparsity/total", 1-nonzero_count/total_count, epoch)
+        writer.add_scalar("compress_ratio/total", total_count/nonzero_count, epoch)
         writer.add_scalar("test/lr", cur_lr, epoch)
         end_epoch = time.time()
 

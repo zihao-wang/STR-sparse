@@ -32,11 +32,10 @@ class VanillaConv(nn.Conv2d):
         )
         return x
 
-    def getSparsity(self, f=torch.sigmoid):
-        sparseWeight = sparseFunction(self.weight, self.sparseThreshold,  self.activation, self.f)
-        temp = sparseWeight.detach().cpu()
-        temp[temp!=0] = 1
-        return (100 - temp.mean().item()*100), temp.numel(), 0
+    def getSparsity(self, t=1e-3):
+        nonzero = self.weight.gt(t).sum()
+        total = self.weight.numel()
+        return nonzero, total, t
 
 
 class STRConv(nn.Conv2d):
@@ -64,7 +63,27 @@ class STRConv(nn.Conv2d):
         sparseWeight = sparseFunction(self.weight, self.sparseThreshold,  self.activation, self.f)
         temp = sparseWeight.detach().cpu()
         temp[temp!=0] = 1
-        return (100 - temp.mean().item()*100), temp.numel(), f(self.sparseThreshold).item()
+        return temp.sum(), temp.numel(), f(self.sparseThreshold).item()
+
+
+class SparedConv(nn.Conv2d):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.red_weight = nn.Parameter(self.weight.clone())
+
+    def forward(self, x):
+        sparse_weight = self.red_weight * self.weight
+        x = F.conv2d(
+            x, sparse_weight, self.bias, self.stride, self.padding, self.dilation, self.groups
+        )
+        return x
+
+    def getSparsity(self, t=1e-3):
+        sparse_weight = self.red_weight * self.weight
+        nonzero = sparse_weight.gt(t).sum()
+        total = sparse_weight.numel()
+        return nonzero, total, t
+
 
 class ChooseEdges(autograd.Function):
     @staticmethod
