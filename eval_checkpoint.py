@@ -13,7 +13,7 @@ import tqdm
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--ckpt", type=int)
+parser.add_argument("--ckpt", type=str)
 parser.add_argument("--thr", type=float, default=1e-3)
 parser.add_argument("--data", type=int, default=10)
 parser.add_argument("--method", type=str, default="VanillaConv")
@@ -178,7 +178,7 @@ def evaluate_checkpoint(ckpt_path = "runs/resnet18-l1-cifar10/l1=1e-3/prune_rate
     nonzero_sum, total_sum = 0, 0
     for n, m in model.named_modules():
         if hasattr(m, 'getSparsity'):
-            nonzero, total, _= m.getSparsity(thr)
+            nonzero, total, _=  m.getSparsity(thr)
             nonzero_sum += nonzero
             total_sum += total
     compression_ratio = total_sum / nonzero_sum
