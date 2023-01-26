@@ -184,7 +184,7 @@ def evaluate_checkpoint(ckpt_path = "runs/resnet18-l1-cifar10/l1=1e-3/prune_rate
     compression_ratio = total_sum / nonzero_sum
 
     # return {"acc": acc, "cr": compression_ratio.item()}
-    return compression_ratio.item(), acc
+    print( compression_ratio.item(), acc )
 
 
 
