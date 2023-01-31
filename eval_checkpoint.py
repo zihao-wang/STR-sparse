@@ -252,8 +252,8 @@ if __name__ == "__main__":
 
             data['cr'].append(cr)
             data['acc'].append(acc)
-            data['ckpt_path'] = ckpt_path
-            data['ckpt_time'] = ckpt_time
+            data['ckpt_path'].append(ckpt_path)
+            data['ckpt_time'].append(ckpt_time)
 
     import pandas as pd
     df = pd.DataFrame(data)
