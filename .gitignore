@@ -2,3 +2,5 @@ runs
 rawdata
 **/*.pyc
 **/.ipynb_checkpoints
+results
+**/*.csv
