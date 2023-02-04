@@ -1,0 +1,7 @@
+function to implement:
+    ☐ train + prune + finetune (impliment first)
+        1. train the model
+        2. save the checkpoint
+        3. finetune the checkpoint
+    ☐ train with auto prune mechanism
+        - already has an mechanism for gradual pruning

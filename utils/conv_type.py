@@ -15,7 +15,6 @@ def sparseFunction(x, s, activation=torch.relu, f=torch.sigmoid):
     return torch.sign(x)*activation(torch.abs(x)-f(s))
 
 def initialize_sInit():
-
     if parser_args.sInit_type == "constant":
         return parser_args.sInit_value*torch.ones([1, 1])
 
@@ -33,7 +32,7 @@ class VanillaConv(nn.Conv2d):
         return x
 
     def getSparsity(self, t=1e-3):
-        nonzero = self.weight.gt(t).sum()
+        nonzero = self.weight.abs().gt(t).sum()
         total = self.weight.numel()
         return nonzero, total, t
 
@@ -66,7 +65,7 @@ class STRConv(nn.Conv2d):
         return temp.sum(), temp.numel(), f(self.sparseThreshold).item()
 
 
-class SparedConv(nn.Conv2d):
+class SpredConv(nn.Conv2d):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.red_weight = nn.Parameter(self.weight.clone())
@@ -80,7 +79,7 @@ class SparedConv(nn.Conv2d):
 
     def getSparsity(self, t=1e-3):
         sparse_weight = self.red_weight * self.weight
-        nonzero = sparse_weight.gt(t).sum()
+        nonzero = sparse_weight.abs().gt(t).sum()
         total = sparse_weight.numel()
         return nonzero, total, t
 
