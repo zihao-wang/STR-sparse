@@ -425,11 +425,11 @@ def get_directories(args):
     config = pathlib.Path(args.config).stem
     if args.log_dir is None:
         run_base_dir = pathlib.Path(
-            f"runs/{config}/{args.name}/prune_rate={args.prune_rate}"
+            f"runs/{config}/{args.name}"
         )
     else:
         run_base_dir = pathlib.Path(
-            f"{args.log_dir}/{config}/{args.name}/prune_rate={args.prune_rate}"
+            f"{args.log_dir}/{config}/{args.name}"
         )
     if args.width_mult != 1.0:
         run_base_dir = run_base_dir / "width_mult={}".format(str(args.width_mult))
