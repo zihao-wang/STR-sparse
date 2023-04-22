@@ -39,13 +39,12 @@ def parse_arguments():
     parser.add_argument("--seed", default=None, type=int, help="seed for initializing training. ")
     parser.add_argument("--multigpu", default=None, type=lambda x: [int(a) for a in x.split(",")], help="Which GPUs to use for multigpu training")
 
-
     # Learning Rate Policy Specific
     parser.add_argument("--lr-policy", default="constant_lr", help="Policy for the learning rate.")
     parser.add_argument("--multistep-lr-adjust", default=30, type=int, help="Interval to drop lr")
     parser.add_argument("--multistep-lr-gamma", default=0.1, type=int, help="Multistep multiplier")
     parser.add_argument("--name", default=None, type=str, help="Experiment name to append to filepath")
-    parser.add_argument("--save_every", default=-1, type=int, help="Save every ___ epochs")
+    parser.add_argument("--save_every", default=5, type=int, help="Save every ___ epochs")
     parser.add_argument("--prune-rate", default=0.0, help="Amount of pruning to do during sparse training", type=float)
     parser.add_argument("--width-mult", default=1.0, help="How much to vary the width of the network.", type=float)
     parser.add_argument("--nesterov", default=False, action="store_true", help="Whether or not to use nesterov for SGD")
@@ -77,6 +76,9 @@ def parse_arguments():
     parser.add_argument("--l1-reg", default=0, type=float, help="regularization of the l1 weight.")
     parser.add_argument("--l1-retrain-dir", type=str, help="provide a path to retrain.")
 
+
+    ## spred sparse ratio
+    parser.add_argument("--spred_sparse_ratio", type=float, help="provide a path to retrain.")
 
     args = parser.parse_args()
 

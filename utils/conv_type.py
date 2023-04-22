@@ -69,6 +69,7 @@ class SpredConv(nn.Conv2d):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.red_weight = nn.Parameter(self.weight.clone())
+        self.threshold = 0
 
     def forward(self, x):
         sparse_weight = self.red_weight * self.weight
@@ -77,11 +78,28 @@ class SpredConv(nn.Conv2d):
         )
         return x
 
-    def getSparsity(self, t=1e-3):
+    def getSparsity(self, t=None):
         sparse_weight = self.red_weight * self.weight
+        if t is None:
+            t = self.threshold
         nonzero = sparse_weight.abs().gt(t).sum()
         total = sparse_weight.numel()
         return nonzero, total, t
+
+    def setSparseRatio(self, ratio):
+        sparse_weight = self.red_weight * self.weight
+        # about p parameters should be zero
+        p = int(sparse_weight.numel() * ratio)
+        threshold = sparse_weight.flatten().abs().sort()[0][p]
+        self.threshold = threshold
+        return threshold
+
+    def prune(self, t=None):
+        if t is None:
+            t = self.threshold
+        sparse_weight = self.red_weight * self.weight
+        zero_index = sparse_weight.abs().lt(t)
+        self.red_weight.data[zero_index] = 0
 
 
 class ChooseEdges(autograd.Function):
@@ -98,6 +116,7 @@ class ChooseEdges(autograd.Function):
     @staticmethod
     def backward(ctx, grad_output):
         return grad_output, None
+
 
 class DNWConv(nn.Conv2d):
     def __init__(self, *args, **kwargs):

@@ -2,7 +2,8 @@
 arch: ResNet50
 
 # ===== Dataset ===== #
-data: /mnt/data/
+# data: /mnt/data/
+data: /home/ziyin/sparsity/imgnet/
 set: ImageNet
 name: baseline
 
@@ -16,7 +17,7 @@ warmup_length: 5
 epochs: 100
 weight_decay: 0.000030517578125
 momentum: 0.875
-batch_size: 256
+batch_size: 200
 label_smoothing: 0.1
 
 # ===== Sparsity =========== #
