@@ -77,6 +77,8 @@ def parse_arguments():
     parser.add_argument("--l1-reg", default=0, type=float, help="regularization of the l1 weight.")
     parser.add_argument("--l1-retrain-dir", type=str, help="provide a path to retrain.")
 
+    ## Spred Related
+    parser.add_argument("--threshold", default=-1, type=float)
 
     args = parser.parse_args()
 

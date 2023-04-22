@@ -10,6 +10,13 @@ __all__ = ["train", "validate"]
 
 
 def train(train_loader, model, criterion, optimizer, epoch, args, writer):
+
+    if args.threshold > 0:
+        for n, m in model.named_modules():
+            if hasattr(m, "set_spred_threshold"):
+                print("setting the threshold of ", n)
+                m.set_spred_threshold(args.threshold)
+
     batch_time = AverageMeter("Time", ":6.3f")
     data_time = AverageMeter("Data", ":6.3f")
     losses = AverageMeter("Loss", ":.3f")
@@ -73,6 +80,12 @@ def train(train_loader, model, criterion, optimizer, epoch, args, writer):
 
 
 def validate(val_loader, model, criterion, args, writer, epoch):
+    if args.threshold > 0:
+        for n, m in model.named_modules():
+            if hasattr(m, "set_spred_threshold"):
+                print("setting the threshold of ", n)
+                m.set_spred_threshold(args.threshold)
+
     batch_time = AverageMeter("Time", ":6.3f", write_val=False)
     losses = AverageMeter("Loss", ":.3f", write_val=False)
     top1 = AverageMeter("Acc@1", ":6.2f", write_val=False)

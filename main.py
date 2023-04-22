@@ -292,6 +292,7 @@ def pretrained(args, model):
         model_state_dict = model.state_dict()
 
         if not args.ignore_pretrained_weights:
+            print("not ignore pretrained weights")
 
             pretrained_final = {
                 k: v
@@ -311,6 +312,7 @@ def pretrained(args, model):
 
         # Using the budgets of STR models for other models like DNW and GMP
         if args.use_budget:
+            print("use budget")
             budget = {}
             for k, v in pretrained.items():
                 if 'sparseThreshold' in k:
