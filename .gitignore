@@ -1,4 +1,6 @@
 runs
+old_runs
+pretrain
 rawdata
 **/*.pyc
 **/.ipynb_checkpoints

@@ -158,6 +158,6 @@ def ResNet18(pretrained=False, num_classes=10):
     return ResNet(get_builder(), BasicBlock, [2, 2, 2, 2], num_classes)
 
 
-def ResNet50(pretrained=False):
+def ResNet50(pretrained=False, num_classes=1000):
     # TODO: pretrained
-    return ResNet(get_builder(), Bottleneck, [3, 4, 6, 3], 1000)
+    return ResNet(get_builder(), Bottleneck, [3, 4, 6, 3], num_classes)

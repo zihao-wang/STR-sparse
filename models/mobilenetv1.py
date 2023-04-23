@@ -3,7 +3,7 @@ from utils.builder import get_builder
 
 
 class MobileNetV1(nn.Module):
-    def __init__(self):
+    def __init__(self, **kwargs):
         super(MobileNetV1, self).__init__()
         builder = get_builder()
 
@@ -49,5 +49,3 @@ class MobileNetV1(nn.Module):
         x = self.fc(x)
         x = x.view(-1, 1000)
         return x
-
-

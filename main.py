@@ -21,7 +21,7 @@ from utils.conv_type import STRConv, SpredConv
 from utils.conv_type import sparseFunction
 
 from args import args
-from trainer import train, validate
+from trainer import train, validate, validate_with_sparse_ratio
 
 import data
 import models
@@ -95,6 +95,13 @@ def main_worker(args):
         acc1, acc5 = validate(
             data.val_loader, model, criterion, args, writer=None, epoch=args.start_epoch
         )
+        print("no pruning", acc1, acc5)
+        answers = validate_with_sparse_ratio(
+            data.val_loader, model, criterion, args, writer=None, epoch=args.start_epoch
+        )
+        for a in answers:
+            print(a)
+
         return
 
     writer = SummaryWriter(log_dir=log_base_dir)
@@ -141,6 +148,21 @@ def main_worker(args):
                     curr_prune_rate = m.prune_rate - (m.prune_rate*prune_decay)
                     m.set_curr_prune_rate(curr_prune_rate)
 
+        # Gradual pruning in Spred experiments
+        if args.conv_type == "SpredConv" and epoch >= args.init_prune_epoch and epoch <= args.final_prune_epoch:
+            total_prune_epochs = args.final_prune_epoch - args.init_prune_epoch + 1
+            for n, m in model.named_modules():
+                if hasattr(m, 'setSparseRatio'):
+                    if total_prune_epochs > 1:
+                        prune_decay = (1 - ((epoch - args.init_prune_epoch)/total_prune_epochs))**3
+                        sparse_ratio = args.spred_sparse_ratio * (1 - prune_decay)
+                    else:
+                        sparse_ratio = args.spred_sparse_ratio
+                    print("pruning", n, "with", sparse_ratio)
+                    m.setSparseRatio(sparse_ratio)
+                    m.prune()
+
+
         # train for one epoch
         start_train = time.time()
         train_acc1, train_acc5 = train(
@@ -151,6 +173,9 @@ def main_worker(args):
         # evaluate on validation set
         start_validation = time.time()
         acc1, acc5 = validate(data.val_loader, model, criterion, args, writer, epoch)
+        answers = validate_with_sparse_ratio(
+            data.val_loader, model, criterion, args, writer, epoch)
+
         validation_time.update((time.time() - start_validation) / 60)
 
         # remember best acc@1 and save checkpoint
@@ -160,7 +185,7 @@ def main_worker(args):
         best_train_acc1 = max(train_acc1, best_train_acc1)
         best_train_acc5 = max(train_acc5, best_train_acc5)
 
-        save = ((epoch % args.save_every) == 0) and args.save_every > 0
+        save = (((epoch+1) % args.save_every) == 0) and args.save_every > 0
         if is_best or save or epoch == args.epochs - 1:
             if is_best:
                 print(f"==> New best, saving at {ckpt_base_dir / 'model_best.pth'}")
