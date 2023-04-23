@@ -79,6 +79,8 @@ def parse_arguments():
 
     ## Spred Related
     parser.add_argument("--threshold", default=-1, type=float)
+    parser.add_argument("--init_red", default="independent", type=str)
+    parser.add_argument("--init_method", default="kaiming_normal", type=str)
 
     args = parser.parse_args()
 

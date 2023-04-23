@@ -17,7 +17,7 @@ from torch.utils.tensorboard import SummaryWriter
 from utils.logging import AverageMeter, ProgressMeter
 from utils.net_utils import save_checkpoint, get_lr, LabelSmoothing
 from utils.schedulers import get_policy
-from utils.conv_type import STRConv
+from utils.conv_type import STRConv, SpredConv
 from utils.conv_type import sparseFunction
 
 from args import args
@@ -370,6 +370,22 @@ def get_model(args):
                     m.bias.requires_grad = False
 
         model.apply(_freeze)
+
+    # initialization of the network
+    if args.init_method is not None:
+        init_method = getattr(nn.init, args.init_method)
+        if args.init_red == "independent":
+            for param in model.parameters():
+                if len(param.shape) > 1:  # initialize weight matrices only
+                    init_method(param)
+        else:
+            for n, m in model.named_modules():
+                if isinstance(m, SpredConv):
+                    init_method(m.weight)
+                    sqrt_weight = m.weight.data.abs().sqrt()
+                    sgn_weight = m.weight.data.sgn()
+                    m.weight.data = sqrt_weight * sgn_weight
+                    m.red_weight.data = sqrt_weight
 
     return model
 
