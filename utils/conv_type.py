@@ -84,12 +84,12 @@ class SpredConv(nn.Conv2d):
             t = self.threshold
         nonzero = sparse_weight.abs().gt(t).sum()
         total = sparse_weight.numel()
-        return nonzero, total, self.t
+        return nonzero, total, self.threshold
 
     def set_spred_threshold(self, t):
-        self.t = t
+        self.threshold = t
         sparse_weight = self.red_weight * self.weight
-        mask_out = sparse_weight.abs().lt(self.t)
+        mask_out = sparse_weight.abs().lt(self.threshold)
         self.weight.data[mask_out] = 0
         self.red_weight.data[mask_out] = 0
 

@@ -147,11 +147,15 @@ def validate(val_loader, model, criterion, args, writer, epoch, prefix="Test:"):
 def validate_with_sparse_ratio(val_loader, model, criterion, args, writer, epoch):
     # todo, bypass the sparse evaluation at this stage
     from copy import deepcopy
+    import numpy as np
 
     records = []
 
-    for sparse_ratio in [0.8, 0.9, 0.95, 0.99]:
+    ratios = np.array(['0.0','0.25','0.5','0.75','1.0','1.25','1.5','1.75','2.0','2.25','2.5','2.75','3.0','3.25','3.5','3.75','4.0','4.25','4.5','4.75','5.0','5.25','5.5','5.75','6.0'])
+    x_ratios = np.linspace(0,6,len(ratios))
+    for cr in x_ratios:
         sparse_model = deepcopy(model)
+        sparse_ratio = 1 - 10 ** (-cr)
         for n, m in sparse_model.named_modules():
             if hasattr(m, 'setSparseRatio'):
                 print("prune", n, "under sparse ratio", sparse_ratio)
@@ -159,7 +163,7 @@ def validate_with_sparse_ratio(val_loader, model, criterion, args, writer, epoch
                 m.prune()
 
         top1acc, top5acc = validate(
-            val_loader, sparse_model, criterion, args, writer, epoch, prefix=f"Test@SparseRatio={sparse_ratio}")
+            val_loader, sparse_model, criterion, args, writer, epoch, prefix=f"Test@CR={cr}")
         records.append(
             (sparse_ratio, top1acc, top5acc)
         )
